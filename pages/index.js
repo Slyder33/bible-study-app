@@ -603,7 +603,5 @@ const BibleApp = () => {
         </div>
       )}
     </div>
-  );
-};
-
+  
 export default BibleApp;
