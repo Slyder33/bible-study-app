@@ -196,9 +196,25 @@ const BibleApp = () => {
 
   /* ---------- AI explanation (stub) ---------- */
   const getAIExplanation = async (book, chapter, verse) => {
-    setLoadingAI(true);
-    const verseText = bibleData[book][chapter][verse];
-    const verseReference = `${book} ${chapter}:${verse}`;
+  setLoadingAI(true);
+
+  const verseText = bibleData[book][chapter][verse];
+  const prompt = `Explain ${book} ${chapter}:${verse} ("${verseText}") in 3–4 sentences.`;
+
+  try {
+    const res = await fetch('/api/ai-explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+    });
+    const data = await res.json();
+    setAiExplanation({ text: data.explanation, verse: `${book} ${chapter}:${verse}`, verseText });
+  } catch (err) {
+    setAiExplanation({ text: 'AI service unavailable.', verse: `${book} ${chapter}:${verse}`, verseText });
+  } finally {
+    setLoadingAI(false);
+  }
+};
 
     // simple fallback sample
     const sample = {
