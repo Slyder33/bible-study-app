@@ -596,12 +596,14 @@ const BibleApp = () => {
                 onClick={saveNote}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
-                Save Note
+               Save Note
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  
+  );
+}
+
 export default BibleApp;
