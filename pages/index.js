@@ -1,17 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Search,
-  BookOpen,
-  Lightbulb,
-  Download,
-  Sun,
-  Moon,
-  Plus,
-  X,
-  MessageCircle,
-  Mic,
-  MicOff,
-} from 'lucide-react';
 
 const BibleApp = () => {
   const [currentBook, setCurrentBook] = useState('Matthew');
