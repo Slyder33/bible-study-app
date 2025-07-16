@@ -557,51 +557,52 @@ const BibleApp = () => {
         </div>
       </div>
 
-      {/* Note Modal */}
-      {showNoteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div
-            className={`rounded-lg p-6 max-w-md w-full mx-4 ${
-              darkMode ? 'bg-gray-800' : 'bg-white'
-            }`}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold">
-                Note for {selectedVerse?.book} {selectedVerse?.chapter}:{selectedVerse?.verse}
-              </h3>
-              <button
-                onClick={() => setShowNoteModal(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <textarea
-              value={noteText}
-              onChange={(e) => setNoteText(e.target.value)}
-              placeholder="Enter your note here..."
-              className={`w-full p-3 rounded border h-32 resize-none ${
-                darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'
+              {/* Note Modal */}
+        {showNoteModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div
+              className={`rounded-lg p-6 max-w-md w-full mx-4 ${
+                darkMode ? 'bg-gray-800' : 'bg-white'
               }`}
-              autoFocus
-            />
-            <div className="flex justify-end space-x-3 mt-4">
-              <button
-                onClick={() => setShowNoteModal(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveNote}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-               Save Note
-              </button>
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold">
+                  Note for {selectedVerse?.book} {selectedVerse?.chapter}:{selectedVerse?.verse}
+                </h3>
+                <button
+                  onClick={() => setShowNoteModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <textarea
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                placeholder="Enter your note here..."
+                className={`w-full p-3 rounded border h-32 resize-none ${
+                  darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'
+                }`}
+                autoFocus
+              />
+              <div className="flex justify-end space-x-3 mt-4">
+                <button
+                  onClick={() => setShowNoteModal(false)}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveNote}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Save Note
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
