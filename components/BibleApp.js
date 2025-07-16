@@ -28,6 +28,19 @@ const BibleApp = () => {
     document.body.classList.toggle('dark', darkMode);
   }, [darkMode]);
 
+  const bibleData = {
+    Matthew: {
+      1: {
+        1: 'The book of the generation of Jesus Christ, the son of David, the son of Abraham.',
+        2: 'Abraham begat Isaac; and Isaac begat Jacob; and Jacob begat Judah and his brethren;',
+        3: 'and Judah begat Perez and Zerah of Tamar; and Perez begat Hezron; and Hezron begat Ram;',
+        4: 'and Ram begat Amminadab; and Amminadab begat Nahshon; and Nahshon begat Salmon;',
+        5: 'and Salmon begat Boaz of Rahab; and Boaz begat Obed of Ruth; and Obed begat Jesse;',
+        6: 'and Jesse begat David the king. And David begat Solomon of her that had been the wife of Uriah;',
+      },
+    },
+  };
+
   const getAIExplanation = async (book, chapter, verse) => {
     setLoadingAI(true);
     const verseText = bibleData[book][chapter][verse];
@@ -70,13 +83,65 @@ const BibleApp = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'dark' : ''}`}>
-      {/* ... existing JSX remains unchanged ... */}
+    <div className={`min-h-screen px-4 py-6 transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold flex items-center gap-2"><BookOpen /> Bible App</h1>
+        <button onClick={() => setDarkMode(!darkMode)} className="text-xl">
+          {darkMode ? <Sun /> : <Moon />}
+        </button>
+      </div>
+
+      <div className="flex gap-4 mb-4">
+        <select value={currentBook} onChange={(e) => setCurrentBook(e.target.value)} className="p-2 border rounded">
+          {Object.keys(bibleData).map((book) => (
+            <option key={book} value={book}>{book}</option>
+          ))}
+        </select>
+        <select value={currentChapter} onChange={(e) => setCurrentChapter(Number(e.target.value))} className="p-2 border rounded">
+          {Object.keys(bibleData[currentBook]).map((chapter) => (
+            <option key={chapter} value={chapter}>{chapter}</option>
+          ))}
+        </select>
+        <button
+          onClick={() => getAIExplanation(currentBook, currentChapter, 1)}
+          className="flex items-center gap-1 px-3 py-2 bg-blue-600 text-white rounded"
+        >
+          <Lightbulb size={18} /> AI Insight
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        {Object.entries(bibleData[currentBook][currentChapter]).map(([verse, text]) => {
+          const key = `${currentBook}_${currentChapter}_${verse}`;
+          return (
+            <div
+              key={key}
+              onClick={() => toggleHighlight(currentBook, currentChapter, verse)}
+              className={`cursor-pointer p-2 rounded ${highlights[key] ? 'bg-yellow-200' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+            >
+              <strong>{verse}</strong>: <span style={{ fontSize: `${fontSize}px` }}>{text}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {aiExplanation && (
+        <div className="mt-6 p-4 rounded border border-gray-400 dark:border-gray-600">
+          <h2 className="text-lg font-bold mb-2">Insight for {aiExplanation.verse}</h2>
+          <p><strong>Text:</strong> {aiExplanation.text}</p>
+          <p><strong>Greek:</strong> {aiExplanation.greek}</p>
+          <p><strong>Context:</strong> {aiExplanation.context}</p>
+          <p><strong>Cross References:</strong> {aiExplanation.crossRef}</p>
+          <p><strong>Commentary:</strong> {aiExplanation.commentary}</p>
+          <p><strong>Application:</strong> {aiExplanation.application}</p>
+        </div>
+      )}
     </div>
   );
 };
 
 export default BibleApp;
+
 
 
   // Sample ASV Bible data (Matthew 1-2 for prototype)
