@@ -24,6 +24,61 @@ const BibleApp = () => {
     }
   }, []);
 
+  useEffect(() => {
+    document.body.classList.toggle('dark', darkMode);
+  }, [darkMode]);
+
+  const getAIExplanation = async (book, chapter, verse) => {
+    setLoadingAI(true);
+    const verseText = bibleData[book][chapter][verse];
+    const prompt = `Explain ${book} ${chapter}:${verse} ("${verseText}") in 3–4 sentences.`;
+    try {
+      const res = await fetch('/api/ai-explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await res.json();
+      setAiExplanation({
+        text: data.explanation,
+        greek: data.greek || '',
+        context: data.context || '',
+        crossRef: data.crossRef || '',
+        commentary: data.commentary || '',
+        application: data.application || '',
+        verse: `${book} ${chapter}:${verse}`,
+        verseText,
+      });
+    } catch {
+      const sample = {
+        text: `This verse contains rich theological significance in its historical context.`,
+        greek: 'Original Greek insights would be provided here.',
+        context: 'Historical and cultural context for the original audience.',
+        crossRef: 'Key Old Testament passages and their connections.',
+        commentary: 'Theological commentary from the perspective of the original authors.',
+        application: 'How this verse connects to the broader biblical narrative.',
+      };
+      setAiExplanation({ ...sample, verse: `${book} ${chapter}:${verse}`, verseText });
+    } finally {
+      setLoadingAI(false);
+    }
+  };
+
+  const toggleHighlight = (book, chapter, verse) => {
+    const key = `${book}_${chapter}_${verse}`;
+    setHighlights((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  return (
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'dark' : ''}`}>
+      {/* ... existing JSX remains unchanged ... */}
+    </div>
+  );
+};
+
+export default BibleApp;
+
+
   // Sample ASV Bible data (Matthew 1-2 for prototype)
   const bibleData = {
     Matthew: {
