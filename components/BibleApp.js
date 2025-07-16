@@ -193,10 +193,152 @@ const BibleApp = () => {
     alert('AI insight added to notes!');
   };
 
-  // Rendering code would go here...
+   // [Rendering block begins here]
   return (
-    <div>
-      <p>This is your Bible App. Rendering structure has been shortened for this rewrite.</p>
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'dark' : ''}`}>
+      <header className={`sticky top-0 z-50 border-b transition-colors duration-300 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <BookOpen className="h-8 w-8 text-blue-600" />
+              <h1 className="text-2xl font-bold">ASV Bible Study</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <label className="text-sm font-medium">Font Size:</label>
+              <input type="range" min="12" max="24" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} className="w-20" />
+              <span className="text-sm">{fontSize}px</span>
+              <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </button>
+              {voiceSearchSupported && (
+                <button onClick={startVoiceSearch} disabled={isListening} className={`p-2 rounded-lg ${isListening ? 'bg-red-600 text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
+                  {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                </button>
+              )}
+              <button onClick={exportNotes} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <Download className="h-4 w-4" />
+                <span>Export Notes</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <aside className="space-y-6">
+          <section className={`rounded-lg border p-4 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+            <h3 className="font-semibold mb-4">Navigation</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Book</label>
+                <select value={currentBook} onChange={(e) => setCurrentBook(e.target.value)} className={`w-full p-2 rounded border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}>
+                  {books.map((b) => <option key={b}>{b}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Chapter</label>
+                <select value={currentChapter} onChange={(e) => setCurrentChapter(Number(e.target.value))} className={`w-full p-2 rounded border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}>
+                  {chapters.map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section className={`rounded-lg border p-4 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+            <h3 className="font-semibold mb-4">Search</h3>
+            <div className="flex space-x-2">
+              <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search verses..." onKeyPress={(e) => e.key === 'Enter' && handleSearch()} className={`flex-1 p-2 rounded border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`} />
+              <button onClick={handleSearch} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                <Search className="h-4 w-4" />
+              </button>
+            </div>
+          </section>
+        </aside>
+
+        <section className="lg:col-span-2 space-y-6">
+          <div className={`rounded-lg border p-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}> 
+            <h2 className="text-3xl font-bold mb-6 text-center">{currentBook} Chapter {currentChapter}</h2>
+            <div className="space-y-4" style={{ fontSize: `${fontSize}px` }}>
+              {Object.entries(bibleData[currentBook]?.[currentChapter] || {}).map(([verse, text]) => {
+                const key = `${currentBook}_${currentChapter}_${verse}`;
+                const isHighlighted = highlights[key];
+                const hasNote = notes[key];
+                return (
+                  <div key={verse} className={`p-3 rounded-lg cursor-pointer transition-colors ${isHighlighted ? 'bg-yellow-200 dark:bg-yellow-800' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`} onClick={() => handleVerseClick(currentBook, currentChapter, verse)}>
+                    <div className="flex items-start space-x-3">
+                      <span className="w-8 text-sm font-bold text-blue-600">{verse}</span>
+                      <div className="flex-1">
+                        <span className="leading-relaxed">{text}</span>
+                        <div className="flex items-center space-x-2 mt-2">
+                          <button onClick={(e) => { e.stopPropagation(); toggleHighlight(currentBook, currentChapter, verse); }} className={`text-xs px-2 py-1 rounded ${isHighlighted ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 dark:bg-gray-600'}`}>
+                            {isHighlighted ? 'Highlighted' : 'Highlight'}
+                          </button>
+                          {hasNote && <MessageCircle className="h-4 w-4 text-blue-600" />}
+                          <button onClick={(e) => { e.stopPropagation(); getAIExplanation(currentBook, currentChapter, verse); }} className="text-xs px-2 py-1 rounded bg-purple-600 text-white hover:bg-purple-700">
+                            <Lightbulb className="h-3 w-3 inline mr-1" /> AI
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {(aiExplanation || loadingAI) && (
+            <div className={`rounded-lg border p-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-purple-50 border-purple-200'}`}>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-purple-600">AI Biblical Insight</h3>
+                {aiExplanation && !loadingAI && (
+                  <button onClick={addInsightToNotes} className="flex items-center space-x-2 px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm">
+                    <Plus className="h-4 w-4" /> <span>Add to Notes</span>
+                  </button>
+                )}
+              </div>
+              {loadingAI ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+                  <p className="mt-2 text-sm">Analyzing scripture with AI...</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {aiExplanation.verse && (
+                    <div className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+                      <p className="font-medium">{aiExplanation.verse}</p>
+                      <p className="italic mt-1">"{aiExplanation.verseText}"</p>
+                    </div>
+                  )}
+                  <div>
+                    <h4 className="font-medium text-purple-600 mb-1">Explanation</h4>
+                    <p className="text-sm">{aiExplanation.text}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+      </main>
+
+      {showNoteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`rounded-lg p-6 max-w-md w-full mx-4 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold">
+                Note for {selectedVerse?.book} {selectedVerse?.chapter}:{selectedVerse?.verse}
+              </h3>
+              <button onClick={() => setShowNoteModal(false)} className="text-gray-500 hover:text-gray-700">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} placeholder="Enter your note here..." className={`w-full p-3 rounded border h-32 resize-none ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`} autoFocus />
+            <div className="flex justify-end space-x-3 mt-4">
+              <button onClick={() => setShowNoteModal(false)} className="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+              <button onClick={saveNote} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Note</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
