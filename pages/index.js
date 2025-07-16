@@ -557,7 +557,7 @@ const BibleApp = () => {
         </div>
       </div>
 
-              {/* Note Modal */}
+               {/* Note Modal */}
         {showNoteModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div
