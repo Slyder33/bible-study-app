@@ -240,7 +240,16 @@ const BibleApp = () => {
                       <div className="flex-1">
                         <span className="leading-relaxed">{text}</span>
                         <div className="flex items-center space-x-2 mt-2">
-                          <button onClick={(e) => { e.stopPropagation(); toggleHighlight(currentBook, currentChapter, verse); }} className={`text-xs px-2 py-1 rounded ${isHighlighted ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 dark:bg-gray-600'}`}>{isHighlighted ? 'Highlighted' : 'Highlight'}</button>
+                          <button
+  key={`hl-${currentBook}-${currentChapter}-${verse}`}
+  onClick={(e) => {
+    e.stopPropagation();
+    toggleHighlight(currentBook, currentChapter, verse);
+  }}
+  className={`text-xs px-2 py-1 rounded ${isHighlighted ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 dark:bg-gray-600'}`}
+>
+  {isHighlighted ? 'Highlighted' : 'Highlight'}
+</button>
                           {hasNote && <MessageCircle className="h-4 w-4 text-blue-600" />}
                           <button onClick={(e) => { e.stopPropagation(); getAIExplanation(currentBook, currentChapter, verse); }} className="text-xs px-2 py-1 rounded bg-purple-600 text-white hover:bg-purple-700"><Lightbulb className="h-3 w-3 inline mr-1" /> AI</button>
                         </div>
