@@ -15,6 +15,30 @@ import {
 } from 'lucide-react';
 
 const BibleApp = () => {
+  const handleSearch = () => {
+  if (!searchTerm.trim()) {
+    setSearchResults([]);
+    return;
+  }
+
+  const results = [];
+  Object.entries(bibleData).forEach(([book, chapters]) => {
+    Object.entries(chapters).forEach(([ch, verses]) => {
+      Object.entries(verses).forEach(([vs, text]) => {
+        if (text.toLowerCase().includes(searchTerm.toLowerCase())) {
+          results.push({
+            book,
+            chapter: Number(ch),
+            verse: Number(vs),
+            text,
+            reference: `${book} ${ch}:${vs}`,
+          });
+        }
+      });
+    });
+  });
+  setSearchResults(results);
+};
   /* ---------- state ---------- */
   const [currentBook, setCurrentBook]   = useState('Matthew');
   const [currentChapter, setCurrentChapter] = useState(1);
