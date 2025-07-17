@@ -32,3 +32,5 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'AI service failed.' });
   }
 }
+console.log("API Key Starts With:", process.env.OPENAI_API_KEY?.slice(0, 5));
+
