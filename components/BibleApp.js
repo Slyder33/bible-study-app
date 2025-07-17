@@ -36,15 +36,30 @@ const BibleApp = () => {
   const [voiceSearchSupported, setVoiceSearchSupported] = useState(false);
 
   /* ---------- effects ---------- */
+  // Enable voice search if supported
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       setVoiceSearchSupported(true);
     }
   }, []);
 
+  // Dark mode toggle
   useEffect(() => {
     document.body.classList.toggle('dark', darkMode);
   }, [darkMode]);
+
+  // Load highlights from localStorage on mount
+  useEffect(() => {
+    const savedHighlights = localStorage.getItem('bibleHighlights');
+    if (savedHighlights) {
+      setHighlights(JSON.parse(savedHighlights));
+    }
+  }, []);
+
+  // Persist highlights to localStorage when updated
+  useEffect(() => {
+    localStorage.setItem('bibleHighlights', JSON.stringify(highlights));
+  }, [highlights]);
 
   /* ---------- bible data ---------- */
   const bibleData = {
@@ -92,6 +107,7 @@ const BibleApp = () => {
     setSearchResults(results);
   };
 
+  // Highlight toggle with localStorage persistence
   const toggleHighlight = (book, chapter, verse) => {
     const key = `${book}_${chapter}_${verse}`;
     setHighlights((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -241,15 +257,15 @@ const BibleApp = () => {
                         <span className="leading-relaxed">{text}</span>
                         <div className="flex items-center space-x-2 mt-2">
                           <button
-  key={`hl-${currentBook}-${currentChapter}-${verse}`}
-  onClick={(e) => {
-    e.stopPropagation();
-    toggleHighlight(currentBook, currentChapter, verse);
-  }}
-  className={`text-xs px-2 py-1 rounded ${isHighlighted ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 dark:bg-gray-600'}`}
->
-  {isHighlighted ? 'Highlighted' : 'Highlight'}
-</button>
+                            key={`hl-${currentBook}-${currentChapter}-${verse}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleHighlight(currentBook, currentChapter, verse);
+                            }}
+                            className={`text-xs px-2 py-1 rounded ${isHighlighted ? 'bg-yellow-400 text-yellow-900' : 'bg-gray-200 dark:bg-gray-600'}`}
+                          >
+                            {isHighlighted ? 'Highlighted' : 'Highlight'}
+                          </button>
                           {hasNote && <MessageCircle className="h-4 w-4 text-blue-600" />}
                           <button onClick={(e) => { e.stopPropagation(); getAIExplanation(currentBook, currentChapter, verse); }} className="text-xs px-2 py-1 rounded bg-purple-600 text-white hover:bg-purple-700"><Lightbulb className="h-3 w-3 inline mr-1" /> AI</button>
                         </div>
