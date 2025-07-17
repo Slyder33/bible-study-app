@@ -2,6 +2,11 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end('Only POST allowed');
 
   const { prompt } = req.body;
+
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(500).json({ error: 'Missing OpenAI API Key.' });
+  }
+
   try {
     const completion = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -17,8 +22,7 @@ export default async function handler(req, res) {
 
     const json = await completion.json();
     const text = json.choices?.[0]?.message?.content || 'No explanation available.';
-    
-    // Optional dummy breakdown
+
     res.status(200).json({
       explanation: text,
       greek: 'N/A',
@@ -32,5 +36,3 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'AI service failed.' });
   }
 }
-console.log("API Key Starts With:", process.env.OPENAI_API_KEY?.slice(0, 5));
-
